@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Oath of Dominion — MokiArena</title>
+<meta name="description" content="Web3 gaming guild dominating Moku Grand Arena Season 1. Track leaderboards, manage Mokis, optimize lineups."/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@600;700;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0a0406;--bg2:#140a0e;--bg3:#1a0e14;
+  --card:rgba(30,12,18,0.85);--card2:rgba(40,15,22,0.9);
+  --red:#ff2d3a;--red2:#cc1a25;--redglow:rgba(255,45,58,0.3);
+  --gold:#ffbd00;--goldglow:rgba(255,189,0,0.25);
+  --fire:#ff6b35;--fireglow:rgba(255,107,53,0.2);
+  --cyan:#00d4ff;
+  --t:#d4c4c8;--t2:#8a6a72;--tw:#f0e8ea;
+  --b:rgba(255,45,58,0.08);--bh:rgba(255,45,58,0.25);
+  --r:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t);font-family:'Rajdhani',sans-serif;font-size:16px;overflow-x:hidden;min-height:100vh}
+::selection{background:var(--red);color:#fff}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--red2);border-radius:4px}
+
+/* NOISE OVERLAY */
+body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.4}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 40px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(10,4,6,0.85);border-bottom:1px solid var(--b);transition:all 0.3s}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-icon{width:36px;height:36px;border-radius:50%;border:2px solid var(--red);object-fit:cover}
+.logo-text{font-family:'Cinzel',serif;font-size:15px;font-weight:700;color:var(--tw);letter-spacing:2px;text-transform:uppercase}
+.logo-sub{font-size:8px;color:var(--red);letter-spacing:4px;text-transform:uppercase;margin-top:-2px}
+.nav-links{display:flex;align-items:center;gap:24px}
+.nav-links a{color:var(--t2);text-decoration:none;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s}
+.nav-links a:hover{color:var(--tw)}
+.nav-cta{background:var(--red)!important;color:#fff!important;padding:8px 20px;border-radius:6px;font-weight:700;letter-spacing:1.5px;transition:all 0.2s!important}
+.nav-cta:hover{background:#ff4555!important;box-shadow:0 0 20px var(--redglow)!important}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:120px 20px 80px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 50% 40%,rgba(255,45,58,0.06) 0%,transparent 50%),radial-gradient(ellipse at 30% 80%,rgba(255,107,53,0.04) 0%,transparent 40%);pointer-events:none}
+.hero-content{position:relative;z-index:2;max-width:800px}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,45,58,0.08);border:1px solid rgba(255,45,58,0.2);border-radius:20px;padding:5px 16px;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:24px}
+.hero-badge .pulse{width:6px;height:6px;border-radius:50%;background:var(--red);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.mascot{width:180px;height:180px;border-radius:50%;border:3px solid var(--red);box-shadow:0 0 60px var(--redglow),0 0 120px rgba(255,45,58,0.1);margin:0 auto 28px;display:block;object-fit:cover;animation:float 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.hero h1{font-family:'Cinzel',serif;font-size:clamp(36px,6vw,64px);font-weight:900;color:var(--tw);line-height:1.1;margin-bottom:12px;text-shadow:0 0 80px var(--redglow)}
+.hero h1 span{color:var(--red)}
+.hero-sub{font-size:17px;color:var(--t2);line-height:1.7;max-width:520px;margin:0 auto 32px;font-weight:500}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;padding:12px 28px;border-radius:8px;cursor:pointer;border:none;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--red);color:#fff;box-shadow:0 4px 20px var(--redglow)}
+.btn-primary:hover{background:#ff4555;transform:translateY(-2px);box-shadow:0 8px 30px var(--redglow)}
+.btn-outline{background:transparent;color:var(--tw);border:1px solid var(--bh)}
+.btn-outline:hover{border-color:var(--red);color:var(--red)}
+.btn-gold{background:rgba(255,189,0,0.1);color:var(--gold);border:1px solid rgba(255,189,0,0.3)}
+.btn-gold:hover{background:rgba(255,189,0,0.18);box-shadow:0 0 20px var(--goldglow)}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--b);border-top:1px solid var(--b);border-bottom:1px solid var(--b)}
+.stat{background:var(--bg2);padding:28px 20px;text-align:center}
+.stat-val{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;color:var(--tw);margin-bottom:4px}
+.stat-val.red{color:var(--red)}.stat-val.gold{color:var(--gold)}.stat-val.fire{color:var(--fire)}
+.stat-lbl{font-size:10px;color:var(--t2);letter-spacing:3px;text-transform:uppercase;font-weight:700}
+
+/* SECTION */
+.section{padding:80px 40px;max-width:1100px;margin:0 auto}
+.section-badge{font-size:9px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+.section-title{font-family:'Cinzel',serif;font-size:32px;font-weight:700;color:var(--tw);margin-bottom:12px}
+.section-desc{font-size:15px;color:var(--t2);max-width:500px;line-height:1.7;margin-bottom:40px}
+
+/* HUB GRID */
+.hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.hub-card{background:var(--card);border:1px solid var(--b);border-radius:var(--r);padding:22px 24px;cursor:pointer;transition:all 0.25s;text-decoration:none;display:block;position:relative;overflow:hidden}
+.hub-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--red),transparent);opacity:0;transition:opacity 0.3s}
+.hub-card:hover{border-color:var(--bh);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.4)}
+.hub-card:hover::after{opacity:1}
+.hub-card-icon{font-size:22px;margin-bottom:10px}
+.hub-card-title{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:var(--tw);letter-spacing:1px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.hub-card-title .arrow{color:var(--t2);font-size:14px;margin-left:auto;transition:transform 0.2s}
+.hub-card:hover .arrow{transform:translateX(3px);color:var(--red)}
+.hub-card-desc{font-size:12px;color:var(--t2);line-height:1.6}
+.hub-card-tag{display:inline-block;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:4px;margin-top:8px}
+.tag-live{background:rgba(0,230,122,0.1);color:#00e67a;border:1px solid rgba(0,230,122,0.2)}
+.tag-new{background:rgba(192,64,255,0.1);color:#c040ff;border:1px solid rgba(192,64,255,0.2)}
+.tag-hot{background:rgba(255,107,53,0.1);color:var(--fire);border:1px solid rgba(255,107,53,0.2)}
+.tag-premium{background:rgba(255,189,0,0.1);color:var(--gold);border:1px solid rgba(255,189,0,0.2)}
+
+/* GAMES */
+.games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.game-card{background:var(--card);border:1px solid var(--b);border-radius:var(--r);padding:20px;text-align:center;transition:all 0.2s}
+.game-card:hover{border-color:var(--bh)}
+.game-card h3{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--tw);margin-bottom:6px}
+.game-card p{font-size:11px;color:var(--t2)}
+.game-card .badge{display:inline-block;margin-top:8px;font-size:9px;font-weight:700;padding:3px 10px;border-radius:4px;letter-spacing:1px}
+
+/* PREMIUM */
+.premium{background:linear-gradient(135deg,rgba(255,189,0,0.04),rgba(255,107,53,0.03));border:1px solid rgba(255,189,0,0.12);border-radius:14px;padding:48px 40px;text-align:center;margin:40px 0}
+.premium h2{font-family:'Cinzel',serif;font-size:28px;color:var(--gold);margin-bottom:8px}
+.premium-sub{color:var(--t2);font-size:14px;margin-bottom:28px;line-height:1.7}
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:28px}
+.tier{background:var(--card2);border:1px solid var(--b);border-radius:var(--r);padding:24px 20px;text-align:left;position:relative}
+.tier.featured{border-color:var(--gold);box-shadow:0 0 30px var(--goldglow)}
+.tier-name{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.tier-name.gold{color:var(--gold)}.tier-name.red{color:var(--red)}.tier-name.cyan{color:var(--cyan)}
+.tier-price{font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;color:var(--tw);margin-bottom:4px}
+.tier-price span{font-size:12px;color:var(--t2);font-weight:500}
+.tier-period{font-size:10px;color:var(--t2);margin-bottom:14px}
+.tier ul{list-style:none;padding:0}
+.tier li{font-size:12px;color:var(--t);padding:4px 0;display:flex;align-items:center;gap:6px}
+.tier li::before{content:'✓';color:var(--gold);font-weight:700;font-size:11px}
+.wallet-box{background:rgba(255,189,0,0.05);border:1px solid rgba(255,189,0,0.15);border-radius:8px;padding:14px 20px;display:inline-flex;align-items:center;gap:10px;margin-top:8px;cursor:pointer;transition:all 0.2s}
+.wallet-box:hover{background:rgba(255,189,0,0.1);border-color:rgba(255,189,0,0.3)}
+.wallet-addr{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);word-break:break-all}
+.wallet-label{font-size:9px;color:var(--t2);letter-spacing:1px;text-transform:uppercase}
+.copy-btn{font-size:18px;cursor:pointer;transition:transform 0.15s}
+.copy-btn:hover{transform:scale(1.2)}
+
+/* FOOTER */
+footer{border-top:1px solid var(--b);padding:40px;text-align:center}
+footer p{font-size:11px;color:var(--t2)}
+footer a{color:var(--red);text-decoration:none}
+footer .socials{display:flex;justify-content:center;gap:16px;margin-bottom:14px}
+footer .socials a{font-size:20px;color:var(--t2);transition:color 0.2s}
+footer .socials a:hover{color:var(--tw)}
+
+/* BUILT ON */
+.built-on{font-size:10px;color:var(--t2);letter-spacing:1px;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px}
+.ronin-badge{background:rgba(0,100,255,0.08);border:1px solid rgba(0,100,255,0.2);padding:2px 8px;border-radius:4px;color:#4488ff;font-weight:700}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{opacity:0;animation:fadeUp 0.6s ease forwards}
+.d1{animation-delay:0.1s}.d2{animation-delay:0.2s}.d3{animation-delay:0.3s}.d4{animation-delay:0.4s}.d5{animation-delay:0.5s}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  nav{padding:12px 16px}
+  .nav-links{display:none}
+  .hero{padding:100px 16px 60px}
+  .mascot{width:130px;height:130px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .section{padding:50px 16px}
+  .hub-grid{grid-template-columns:1fr}
+  .premium{padding:30px 16px}
+  .tiers{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="logo">
+    <img src="/mascot.jpg" alt="OoD" class="logo-icon"/>
+    <div>
+      <div class="logo-text">Oath of Dominion</div>
+      <div class="logo-sub">MokiArena</div>
+    </div>
+  </a>
+  <div class="nav-links">
+    <a href="#hub">Hub</a>
+    <a href="#games">Games</a>
+    <a href="#premium">Premium</a>
+    <a href="https://discord.gg/zrEd7Q4wHS" target="_blank">Discord</a>
+    <a href="/app.html" class="nav-cta">⚔️ Enter Arena</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge fade-up"><span class="pulse"></span> Season 1 Active — $1M+ Prize Pool</div>
+    <img src="/mascot.jpg" alt="Oath of Dominion" class="mascot fade-up d1"/>
+    <h1 class="fade-up d2">Oath of <span>Dominion</span></h1>
+    <p class="hero-sub fade-up d3">The next generation Web3 gaming guild dominating Moku Grand Arena. We track, we optimize, we conquer — together.</p>
+    <div class="hero-btns fade-up d4">
+      <a href="/app.html" class="btn btn-primary">⚔️ Enter MokiArena</a>
+      <a href="#hub" class="btn btn-outline">Explore Hub</a>
+      <a href="#premium" class="btn btn-gold">👑 Premium</a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats fade-up d3">
+  <div class="stat"><div class="stat-val red" id="s-players">100</div><div class="stat-lbl">Players Tracked</div></div>
+  <div class="stat"><div class="stat-val gold" id="s-pool">$1M+</div><div class="stat-lbl">Prize Pool</div></div>
+  <div class="stat"><div class="stat-val fire" id="s-contests">13</div><div class="stat-lbl">Active Contests</div></div>
+  <div class="stat"><div class="stat-val" id="s-matches">12</div><div class="stat-lbl">Matches Today</div></div>
+</div>
+
+<!-- HUB -->
+<section class="section" id="hub">
+  <div class="section-badge">⚔️ Command Center</div>
+  <div class="section-title">Guild Hub</div>
+  <div class="section-desc">Everything you need to dominate Grand Arena, one click away.</div>
+  <div class="hub-grid">
+    <a href="/app.html" class="hub-card">
+      <div class="hub-card-icon">🏟️</div>
+      <div class="hub-card-title">MokiArena Manager <span class="arrow">↗</span></div>
+      <div class="hub-card-desc">Full dashboard — leaderboards, matches, lineup builder, wallet scanner, AI optimizer, contest tracker.</div>
+      <span class="hub-card-tag tag-live">LIVE</span>
+    </a>
+    <a href="/app.html#leaderboard" class="hub-card">
+      <div class="hub-card-icon">🏆</div>
+      <div class="hub-card-title">Leaderboard <span class="arrow">↗</span></div>
+      <div class="hub-card-desc">Real-time Season 1 rankings — 100 Regulars + 100 Champions with live mXP scores from the GA API.</div>
+      <span class="hub-card-tag tag-live">LIVE</span>
+    </a>
+    <a href="/app.html#matches" class="hub-card">
+      <div class="hub-card-icon">⚔️</div>
+      <div class="hub-card-title">Match Tracker <span class="arrow">↗</span></div>
+      <div class="hub-card-desc">Today's Moki Mayhem matches with Red vs Blue team compositions and real match IDs.</div>
+      <span class="hub-card-tag tag-live">LIVE</span>
+    </a>
+    <a href="/app.html#optimizer" class="hub-card">
+      <div class="hub-card-icon">🤖</div>
+      <div class="hub-card-title">AI Optimizer <span class="arrow">↗</span></div>
+      <div class="hub-card-desc">Claude-powered lineup recommendations, meta analysis, and training optimization for your Mokis.</div>
+      <span class="hub-card-tag tag-new">NEW</span>
+    </a>
+    <a href="/app.html#contests" class="hub-card">
+      <div class="hub-card-icon">🎯</div>
+      <div class="hub-card-title">Contest Tracker <span class="arrow">↗</span></div>
+      <div class="hub-card-desc">All active fantasy contests from fantasy.grandarena.gg — entry fees, player counts, formats.</div>
+      <span class="hub-card-tag tag-hot">HOT</span>
+    </a>
+    <a href="/app.html#lineup" class="hub-card">
+      <div class="hub-card-icon">🃏</div>
+      <div class="hub-card-title">Lineup Builder <span class="arrow">↗</span></div>
+      <div class="hub-card-desc">Drag-and-drop lineup builder with scheme cards. Assign Mokis to optimal roles.</div>
+    </a>
+    <a href="https://discord.gg/zrEd7Q4wHS" target="_blank" class="hub-card">
+      <div class="hub-card-icon">💬</div>
+      <div class="hub-card-title">Discord <span class="arrow">↗</span></div>
+      <div class="hub-card-desc">The heart of Oath of Dominion. Strategy, alpha, and grinding daily with the squad.</div>
+    </a>
+    <a href="https://train.grandarena.gg" target="_blank" class="hub-card">
+      <div class="hub-card-icon">🏋️</div>
+      <div class="hub-card-title">Train Mokis <span class="arrow">↗</span></div>
+      <div class="hub-card-desc">Official Moki training on Grand Arena. Build Speed, Strength, Defense, Dexterity, Fortitude.</div>
+    </a>
+    <a href="https://gatracker.xyz" target="_blank" class="hub-card">
+      <div class="hub-card-icon">📊</div>
+      <div class="hub-card-title">GA Tracker <span class="arrow">↗</span></div>
+      <div class="hub-card-desc">Community-built Grand Arena data tracker with market analytics and performance stats.</div>
+    </a>
+  </div>
+</section>
+
+<!-- GAMES -->
+<section class="section" id="games">
+  <div class="section-badge">🎮 Battlefield</div>
+  <div class="section-title">Games We Dominate</div>
+  <div class="section-desc">Oath of Dominion competes at the highest level across the Ronin ecosystem.</div>
+  <div class="games-grid">
+    <div class="game-card">
+      <div style="font-size:32px;margin-bottom:8px">🏟️</div>
+      <h3>Moku Grand Arena</h3>
+      <p>#1 Moki Holder · Season 1 Live</p>
+      <div class="badge" style="background:rgba(0,230,122,0.1);color:#00e67a;border:1px solid rgba(0,230,122,0.2)">ACTIVE</div>
+    </div>
+    <div class="game-card">
+      <div style="font-size:32px;margin-bottom:8px">⚔️</div>
+      <h3>Cambria</h3>
+      <p>Duel Arena & Islands</p>
+      <div class="badge" style="background:rgba(0,230,122,0.1);color:#00e67a;border:1px solid rgba(0,230,122,0.2)">ACTIVE</div>
+    </div>
+    <div class="game-card">
+      <div style="font-size:32px;margin-bottom:8px">🏰</div>
+      <h3>Fableborne</h3>
+      <p>Kingdom Conquest</p>
+      <div class="badge" style="background:rgba(255,189,0,0.1);color:#ffbd00;border:1px solid rgba(255,189,0,0.2)">COMING SOON</div>
+    </div>
+    <div class="game-card">
+      <div style="font-size:32px;margin-bottom:8px">🏠</div>
+      <h3>Axie Homeland</h3>
+      <p>3,000+ Plots</p>
+      <div class="badge" style="background:rgba(0,212,255,0.1);color:#00d4ff;border:1px solid rgba(0,212,255,0.2)">VETERAN</div>
+    </div>
+  </div>
+</section>
+
+<!-- PREMIUM -->
+<section class="section" id="premium">
+  <div class="premium">
+    <div class="section-badge" style="color:var(--gold)">👑 Premium Access</div>
+    <h2>Unlock the Full Arsenal</h2>
+    <p class="premium-sub">Support the guild and unlock advanced features — AI optimizer, real-time alerts, priority support, and exclusive alpha.</p>
+    <div class="tiers">
+      <div class="tier">
+        <div class="tier-name cyan">Free</div>
+        <div class="tier-price">$0 <span>/ forever</span></div>
+        <div class="tier-period">Basic access</div>
+        <ul>
+          <li>Leaderboard (Top 100)</li>
+          <li>Match viewer</li>
+          <li>Wallet scanner</li>
+          <li>Lineup builder</li>
+        </ul>
+      </div>
+      <div class="tier featured">
+        <div class="tier-name gold">Premium</div>
+        <div class="tier-price">0.05 ETH <span>/ month</span></div>
+        <div class="tier-period">Most popular</div>
+        <ul>
+          <li>Everything in Free</li>
+          <li>AI Optimizer (unlimited)</li>
+          <li>Real-time score alerts</li>
+          <li>Advanced analytics</li>
+          <li>Priority API access</li>
+          <li>Discord premium role</li>
+        </ul>
+      </div>
+      <div class="tier">
+        <div class="tier-name red">Guild Master</div>
+        <div class="tier-price">0.2 ETH <span>/ month</span></div>
+        <div class="tier-period">Full power</div>
+        <ul>
+          <li>Everything in Premium</li>
+          <li>Multi-wallet tracking</li>
+          <li>Guild analytics dashboard</li>
+          <li>Custom AI strategies</li>
+          <li>Early feature access</li>
+          <li>Direct dev support</li>
+        </ul>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--t2);margin-bottom:12px">Send payment to this Ronin wallet. DM receipt on Discord for activation.</p>
+    <div class="wallet-box" onclick="copyWallet()">
+      <div>
+        <div class="wallet-label">Payment Wallet (Ronin)</div>
+        <div class="wallet-addr" id="wallet-addr">0x7c188B9552836EDc5ff0f214CE0A3010907dBCf5</div>
+      </div>
+      <span class="copy-btn" id="copy-icon">📋</span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="socials">
+    <a href="https://discord.gg/zrEd7Q4wHS" target="_blank" title="Discord">💬</a>
+    <a href="https://twitter.com/" target="_blank" title="Twitter">𝕏</a>
+  </div>
+  <div class="built-on">Built on <span class="ronin-badge">Ronin</span></div>
+  <p style="margin-top:10px">Built with 🔥 by <a href="#">Oath of Dominion</a> — Moku Grand Arena Season 1</p>
+  <p style="margin-top:6px;font-size:10px">© 2026 Oath of Dominion. All rights reserved.</p>
+</footer>
+
+<script>
+// Copy wallet address
+function copyWallet(){
+  navigator.clipboard.writeText('0x7c188B9552836EDc5ff0f214CE0A3010907dBCf5');
+  document.getElementById('copy-icon').textContent='✅';
+  setTimeout(()=>document.getElementById('copy-icon').textContent='📋',2000);
+}
+
+// Fetch live stats from our API proxy
+async function loadStats(){
+  try{
+    // Leaderboard count
+    const lb=await fetch('/api/ga?path=/api/v1/leaderboards/active').then(r=>r.ok?r.json():null);
+    if(lb?.data?.length){
+      const reg=lb.data.find(l=>l.name?.includes('Regulars'));
+      if(reg){
+        const sc=await fetch('/api/ga?path=/api/v1/leaderboards/'+reg.id+'/scores?limit=100').then(r=>r.ok?r.json():null);
+        if(sc?.data?.length) document.getElementById('s-players').textContent=sc.data.length;
+      }
+    }
+    // Contests
+    const ct=await fetch('/api/ga?path=/api/v1/contests/active').then(r=>r.ok?r.json():null);
+    if(ct?.data) document.getElementById('s-contests').textContent=ct.data.length;
+    // Matches
+    const today=new Date().toISOString().split('T')[0];
+    const mt=await fetch('/api/ga?path=/api/v1/matches?matchDate='+today+'%26limit=20').then(r=>r.ok?r.json():null);
+    if(mt?.data) document.getElementById('s-matches').textContent=mt.data.length;
+  }catch(e){console.warn('Stats load:',e)}
+}
+loadStats();
+</script>
+</body>
+</html>

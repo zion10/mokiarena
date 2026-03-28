@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MokiArena — Grand Arena Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@600;700;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+<style>
+:root{--bg:#0a0406;--bg2:#140a0e;--bg3:#1a0e14;--bg4:#22121a;--glass:rgba(30,12,18,.85);--glass2:rgba(20,8,12,.95);--red:#ff2d3a;--reddim:rgba(255,45,58,.08);--bh:rgba(255,45,58,.25);--gold:#ffbd00;--golddim:rgba(255,189,0,.12);--fire:#ff6b35;--gn:#00e67a;--gndim:rgba(0,230,122,.1);--cyan:#00d4ff;--pu:#c040ff;--pudim:rgba(192,64,255,.1);--t:#d4c4c8;--td:#6a4a52;--tw:#f0e8ea;--b:rgba(255,45,58,.08);--r:8px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t);font-family:'Rajdhani',sans-serif;font-size:14px;overflow:hidden;height:100vh}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#cc1a25;border-radius:3px}
+#app{display:flex;height:100vh}
+.sb{width:220px;min-width:220px;background:linear-gradient(180deg,var(--bg2),var(--bg));border-right:1px solid var(--b);display:flex;flex-direction:column}
+.sbl{padding:14px 16px;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:10px}
+.sbl img{width:34px;height:34px;border-radius:50%;border:2px solid var(--red)}
+.slt{font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:var(--tw);letter-spacing:1px}
+.sls{font-size:7px;color:var(--red);letter-spacing:3px;text-transform:uppercase}
+.nsc{font-size:7px;color:var(--td);letter-spacing:3px;text-transform:uppercase;padding:12px 16px 4px}
+.nav{display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;font-size:12px;font-weight:600;color:var(--td);transition:all .15s;position:relative}
+.nav:hover{color:var(--tw);background:var(--reddim)}.nav.act{color:var(--red);background:linear-gradient(90deg,var(--reddim),transparent)}
+.nav.act::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--red)}
+.nb{margin-left:auto;font-size:7px;padding:1px 6px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-weight:700}
+.nblive{background:rgba(0,230,122,.7);color:#050505}.nbnew{background:rgba(192,64,255,.7);color:#fff}.nbhot{background:rgba(255,107,53,.7);color:#fff}
+.sbf{margin-top:auto;padding:10px 12px;border-top:1px solid var(--b);display:flex;flex-direction:column;gap:6px}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--gn);animation:bl 1.6s infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.3}}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:44px;background:var(--bg2);border-bottom:1px solid var(--b);display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0}
+.tbt{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:var(--tw)}
+.tbc{font-size:8px;color:var(--td);margin-left:4px}
+.tbr{margin-left:auto;display:flex;align-items:center;gap:8px}
+.lp{display:flex;align-items:center;gap:4px;background:var(--gndim);border:1px solid rgba(0,230,122,.2);border-radius:20px;padding:2px 8px;font-size:8px;font-weight:700;color:var(--gn);letter-spacing:1px;text-transform:uppercase}
+.content{flex:1;overflow-y:auto;padding:14px 18px;background:radial-gradient(ellipse at 85% 0%,rgba(255,45,58,.03) 0%,transparent 50%),var(--bg)}
+.card{background:var(--glass);border:1px solid var(--b);border-radius:var(--r);margin-bottom:12px}
+.chd{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--b)}
+.ct{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red)}
+.cbd{padding:12px 14px}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.sc{background:var(--glass);border:1px solid var(--b);border-radius:var(--r);padding:12px 14px;position:relative;overflow:hidden}
+.sc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sc.red::after{background:linear-gradient(90deg,var(--red),transparent)}.sc.gold::after{background:linear-gradient(90deg,var(--gold),transparent)}.sc.fire::after{background:linear-gradient(90deg,var(--fire),transparent)}.sc.gn::after{background:linear-gradient(90deg,var(--gn),transparent)}
+.sl{font-size:7px;color:var(--td);letter-spacing:2px;text-transform:uppercase}
+.sv{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:700;margin-top:4px}
+.sv.red{color:var(--red)}.sv.gold{color:var(--gold)}.sv.fire{color:var(--fire)}.sv.gn{color:var(--gn)}
+.sav{font-size:9px;font-weight:600;margin-top:2px;color:var(--gn)}
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl th{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--td);font-weight:700;padding:6px 10px;text-align:left;border-bottom:1px solid var(--b);white-space:nowrap}
+.tbl td{padding:7px 10px;border-bottom:1px solid rgba(255,45,58,.04);font-weight:500;vertical-align:middle}
+.tbl tr:hover td{background:rgba(255,45,58,.025)}
+.tw{overflow:auto;max-height:520px}
+.rk{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--td)}
+.rkg{color:var(--gold)}.rks{color:#aaa}.rkb{color:#a06030}
+.mn{font-weight:700;color:var(--tw);font-size:12px}
+.btn{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:6px 12px;border-radius:6px;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
+.btn-r{background:var(--reddim);color:var(--red);border:1px solid var(--bh)}.btn-r:hover{background:rgba(255,45,58,.15)}
+.btn-s{background:var(--red);color:#fff;border:1px solid var(--red)}.btn-s:hover{background:#ff4555}
+.btn-o{background:transparent;color:var(--tw);border:1px solid var(--bh)}.btn-o:hover{border-color:var(--red)}
+.sm{padding:3px 8px!important;font-size:8px!important}
+.pg{height:4px;background:var(--bg4);border-radius:4px;overflow:hidden}
+.pf{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--red),var(--fire))}
+.b2{font-size:7px;font-weight:700;letter-spacing:.6px;padding:2px 6px;border-radius:3px;text-transform:uppercase;white-space:nowrap;display:inline-block}
+.bw{background:var(--gndim);color:var(--gn);border:1px solid rgba(0,230,122,.3)}
+.bl{background:var(--reddim);color:var(--red);border:1px solid var(--bh)}
+.bp{background:var(--pudim);color:var(--pu);border:1px solid rgba(192,64,255,.3)}
+.bg{background:var(--golddim);color:var(--gold);border:1px solid rgba(255,189,0,.3)}
+.bf{background:rgba(255,107,53,.1);color:var(--fire);border:1px solid rgba(255,107,53,.3)}
+.tabs{display:flex;border-bottom:1px solid var(--b);margin-bottom:10px}
+.tab{padding:6px 14px;cursor:pointer;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--td);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.tab:hover{color:var(--tw)}.tab.act{color:var(--red);border-bottom-color:var(--red)}
+.inp{background:var(--reddim);border:1px solid var(--b);border-radius:6px;padding:6px 10px;color:var(--tw);font-family:'Rajdhani',sans-serif;font-size:12px;outline:none;width:200px}
+.inp:focus{border-color:var(--bh)}.inp::placeholder{color:var(--td)}
+.toasts{position:fixed;top:12px;right:12px;z-index:9999;display:flex;flex-direction:column;gap:5px}
+.toast{background:var(--glass2);border-radius:var(--r);padding:8px 14px;font-size:10px;font-weight:600;color:var(--tw);border-left:2px solid var(--red);max-width:300px;animation:tin .2s ease}
+.toast.ok{border-left-color:var(--gn);color:var(--gn)}.toast.err{border-left-color:var(--red);color:var(--red)}
+@keyframes tin{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
+.aip{background:linear-gradient(135deg,rgba(192,64,255,.06),rgba(255,45,58,.04));border:1px solid rgba(192,64,255,.15);border-radius:var(--r);padding:14px}
+.aip-out{background:var(--bg3);border:1px solid var(--b);border-radius:6px;padding:14px;margin-top:10px;font-size:12px;line-height:1.7;color:var(--t);max-height:500px;overflow-y:auto;white-space:pre-wrap}
+.prize-box{background:linear-gradient(135deg,rgba(255,189,0,.06),rgba(255,107,53,.04));border:1px solid rgba(255,189,0,.15);border-radius:var(--r);padding:14px;margin-bottom:12px;text-align:center}
+.mc{background:var(--bg3);border:1px solid var(--b);border-radius:var(--r);padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:all .15s;cursor:pointer}
+.mc:hover{border-color:var(--bh)}
+.ov{position:fixed;inset:0;background:rgba(10,4,6,.9);z-index:200;display:flex;align-items:center;justify-content:center}
+.modal{background:var(--glass2);border:1px solid var(--bh);border-radius:12px;max-height:85vh;overflow-y:auto;width:460px;max-width:90vw}
+.mhd{padding:14px 16px;border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between}
+.mtt{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:var(--red)}
+.mx{cursor:pointer;color:var(--td);font-size:18px}.mx:hover{color:var(--tw)}
+.mbd{padding:16px}
+.guide-section{background:var(--bg3);border:1px solid var(--b);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.guide-section h3{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--red);margin-bottom:8px}
+.guide-section p{font-size:12px;line-height:1.7;color:var(--t);margin-bottom:6px}
+.guide-section .highlight{color:var(--gold);font-weight:700}
+.guide-section .stat{color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:11px}
+.class-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,45,58,.04)}
+.class-row:last-child{border:none}
+@media(max-width:768px){.sb{display:none}.sg{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="toasts"><div v-for="t in toasts" :key="t.id" class="toast" :class="t.type">{{t.msg}}</div></div>
+
+<div v-if="showW" class="ov" @click.self="showW=false"><div class="modal"><div class="mhd"><span class="mtt">⚡ Connect Wallet</span><span class="mx" @click="showW=false">✕</span></div><div class="mbd"><p style="font-size:11px;color:var(--td);margin-bottom:12px">Enter Ronin wallet to scan Mokis with full 5-stat breakdown.</p><input class="inp" style="width:100%" v-model="wInput" placeholder="0x... or ronin:..." @keyup.enter="connectW"/><button class="btn btn-s" style="width:100%;margin-top:10px" @click="connectW">⚡ Scan Wallet</button></div></div></div>
+
+<aside class="sb">
+  <div class="sbl"><img src="/mascot.jpg" alt="OoD" onerror="this.style.display='none'"/><div><div class="slt">MokiArena</div><div class="sls">Oath of Dominion</div></div></div>
+  <div class="nsc">Navigation</div>
+  <div v-for="n in navItems" :key="n.id" class="nav" :class="{act:page===n.id}" @click="page=n.id">
+    <span style="font-size:14px;width:18px;text-align:center;flex-shrink:0">{{n.icon}}</span>{{n.label}}
+    <span v-if="n.live" class="nb nblive">LIVE</span><span v-if="n.isnew" class="nb nbnew">NEW</span><span v-if="n.hot" class="nb nbhot">HOT</span>
+  </div>
+  <div class="sbf">
+    <button class="btn btn-r" style="width:100%;font-size:9px" @click="showW=true">{{walletAddr?'⇄ Switch':'⚡ Connect Wallet'}}</button>
+    <div style="display:flex;align-items:center;gap:5px;font-size:8px;color:var(--td)"><span class="dot"></span>API: <strong style="color:var(--gn)">{{apiOk?'Live':'Scraped'}}</strong></div>
+    <a href="https://discord.gg/zrEd7Q4wHS" target="_blank" style="font-size:8px;color:var(--td);text-decoration:none">💬 Join Guild Discord</a>
+    <a href="/" style="font-size:8px;color:var(--td);text-decoration:none">← Back to Home</a>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar"><div><div class="tbt">{{ptitles[page]}}</div><span class="tbc">Season 1 · {{regulars.length+champions.length}} players</span></div><div class="tbr"><div class="lp"><span class="dot"></span>{{apiOk?'Live API':'Real Data'}}</div><button class="btn btn-r sm" @click="refreshAll">🔄 Refresh</button></div></div>
+  <div class="content" :key="page">
+
+<!-- DASHBOARD -->
+<div v-if="page==='dashboard'">
+  <div class="sg">
+    <div class="sc red"><div class="sl">Leader</div><div class="sv red" style="font-size:14px;margin-top:6px">{{regulars[0]?.name}}</div><div class="sav" style="font-family:'JetBrains Mono',monospace;font-size:10px">{{(regulars[0]?.score||0).toLocaleString()}} mXP</div></div>
+    <div class="sc gold"><div class="sl">Prize Pool</div><div class="sv gold">$1.2M</div><div class="sav" style="color:var(--gold)">220 Champion Slots</div></div>
+    <div class="sc fire"><div class="sl">Contests</div><div class="sv fire">{{contests.length}}</div><div class="sav" style="color:var(--fire)">Active Now</div></div>
+    <div class="sc gn"><div class="sl">Players</div><div class="sv gn">{{regulars.length}}</div><div class="sav">Regulars Tracked</div></div>
+  </div>
+  <div class="prize-box">
+    <div style="font-size:9px;color:var(--gold);letter-spacing:3px;text-transform:uppercase;font-weight:700;margin-bottom:6px">💰 Season 1 Prize Pool Estimation</div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:32px;font-weight:900;color:var(--gold);text-shadow:0 0 40px rgba(255,189,0,.25)">$1,200,000+</div>
+    <div style="font-size:10px;color:var(--td);margin-top:4px">Feb 20 → May 23, 2026 · Scoring: s1_v4</div>
+    <div style="margin-top:12px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+      <div v-for="s in prizeSlots" :key="s.l" style="background:var(--bg3);border-radius:6px;padding:8px;text-align:center">
+        <div style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700" :style="{color:s.c}">{{s.v}}</div>
+        <div style="font-size:7px;color:var(--td);letter-spacing:1px;margin-top:2px">{{s.l}}</div>
+      </div>
+    </div>
+  </div>
+  <div class="card"><div class="chd"><span class="ct">🏆 Regulars — Top 15</span><button class="btn btn-r sm" @click="page='leaderboard'">Full Board →</button></div>
+    <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>#</th><th>Player</th><th>Class</th><th>mXP</th><th>Win%</th><th>Deposits</th><th>Elims</th><th>Progress</th></tr></thead><tbody>
+      <tr v-for="(p,i) in regulars.slice(0,15)" :key="i"><td><span class="rk" :class="i<3?['rkg','rks','rkb'][i]:''">{{i+1}}</span></td><td><span class="mn">{{p.name}}</span></td><td><span class="b2" :class="classBadge(p.cls)">{{p.cls}}</span></td><td style="font-family:'Orbitron',sans-serif;font-size:12px;color:var(--tw)">{{p.score.toLocaleString()}}</td><td style="font-family:'JetBrains Mono',monospace;font-size:10px" :style="{color:p.winPct>55?'var(--gn)':p.winPct>50?'var(--gold)':'var(--red)'}">{{p.winPct}}%</td><td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan)">{{p.deposits}}</td><td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--fire)">{{p.elims}}</td><td style="min-width:100px"><div class="pg"><div class="pf" :style="{width:((p.score/regulars[0].score)*100)+'%'}"></div></div></td></tr>
+    </tbody></table></div>
+  </div>
+  <div class="card"><div class="chd"><span class="ct">⚔️ Today's Matches ({{matches.length}})</span><button class="btn btn-r sm" @click="page='matches'">All →</button></div><div class="cbd">
+    <div v-for="m in matches.slice(0,5)" :key="m.id" class="mc" @click="openMatch(m.id)"><div style="flex:1;text-align:left"><div style="font-size:10px;color:var(--tw);font-weight:600">🔴 {{m.reds.join(', ')}}</div><span style="font-size:8px;color:var(--td)">Red</span></div><div style="font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;color:var(--td)">VS</div><div style="flex:1;text-align:right"><div style="font-size:10px;color:var(--tw);font-weight:600">🔵 {{m.blues.join(', ')}}</div><span style="font-size:8px;color:var(--td)">Blue</span></div></div>
+  </div></div>
+</div>
+
+<!-- LEADERBOARD -->
+<div v-if="page==='leaderboard'">
+  <div class="tabs"><div class="tab" :class="{act:lbv==='reg'}" @click="lbv='reg'">🔥 Regulars ({{regulars.length}})</div><div class="tab" :class="{act:lbv==='champ'}" @click="lbv='champ'">👑 Champions ({{champions.length}})</div></div>
+  <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center"><input class="inp" placeholder="🔍 Search..." v-model="lbs"/><span style="font-size:9px;color:var(--td)">{{filtLB.length}} players</span></div>
+  <div class="prize-box" style="margin-bottom:14px"><div style="font-size:8px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;font-weight:700">💰 Estimated Earnings</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px"><div v-for="e in earnings" :key="e.l" style="background:var(--bg3);border-radius:6px;padding:8px;text-align:center"><div style="font-family:'Orbitron',sans-serif;font-size:16px" :style="{color:e.c}">{{e.v}}</div><div style="font-size:7px;color:var(--td)">{{e.l}}</div></div></div></div>
+  <div class="card"><div class="chd"><span class="ct">{{lbv==='reg'?'🔥 Regulars':'👑 Champions'}}</span></div><div class="tw"><table class="tbl"><thead><tr><th>#</th><th>Player</th><th>Class</th><th>mXP</th><th>Matches</th><th>Win%</th><th>Avg</th><th>Deposits</th><th>Elims</th><th>Bar</th></tr></thead><tbody>
+    <tr v-for="(p,i) in filtLB" :key="p.name"><td><span class="rk" :class="i<3?['rkg','rks','rkb'][i]:''">{{i+1}}</span></td><td><span class="mn">{{p.name}}</span></td><td><span class="b2" :class="classBadge(p.cls)">{{p.cls}}</span></td><td style="font-family:'Orbitron',sans-serif;font-size:12px;color:var(--tw)">{{p.score.toLocaleString()}}</td><td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--td)">{{p.matches}}</td><td style="font-family:'JetBrains Mono',monospace;font-size:10px" :style="{color:p.winPct>55?'var(--gn)':p.winPct>50?'var(--gold)':'var(--red)'}">{{p.winPct}}%</td><td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--td)">{{p.avgScore}}</td><td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan)">{{p.deposits}}</td><td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--fire)">{{p.elims}}</td><td style="min-width:100px"><div class="pg"><div class="pf" :style="{width:((p.score/(filtLB[0]?.score||1))*100)+'%'}"></div></div></td></tr>
+  </tbody></table></div></div>
+</div>
+
+<!-- MATCHES -->
+<div v-if="page==='matches'"><div style="margin-bottom:12px;font-size:10px;color:var(--td)">{{matches.length}} matches · Moki Mayhem</div><div v-for="m in matches" :key="m.id" class="mc" @click="openMatch(m.id)"><div style="flex:1;text-align:left"><div style="font-size:10px;color:var(--tw);font-weight:600">🔴 {{m.reds.join(', ')}}</div><span style="font-size:8px;color:var(--td)">Red</span></div><div style="font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;color:var(--td)">VS</div><div style="flex:1;text-align:right"><div style="font-size:10px;color:var(--tw);font-weight:600">🔵 {{m.blues.join(', ')}}</div><span style="font-size:8px;color:var(--td)">Blue</span></div><div style="font-size:7px;color:var(--td);font-family:'JetBrains Mono',monospace">#{{m.id.slice(-6)}}</div></div></div>
+
+<!-- CONTESTS -->
+<div v-if="page==='contests'"><div style="margin-bottom:12px;font-size:10px;color:var(--td)">{{contests.length}} active contests</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px"><div v-for="c in contests" :key="c.id" class="card" style="margin:0;cursor:pointer" @click="window.open('https://fantasy.grandarena.gg/contests','_blank')"><div class="cbd"><div style="font-size:11px;font-weight:700;color:var(--tw);margin-bottom:6px">{{c.name}}</div><div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px"><span class="b2 bw">LIVE</span><span class="b2 bg">{{c.entry}} {{c.currency}}</span><span class="b2 bl">{{c.entries}}/{{c.maxEntries||'∞'}}</span><span v-if="c.featured" class="b2 bp">FEATURED</span></div><div style="font-size:8px;color:var(--td)">{{c.slots}} slots · {{c.prizeSplit}} · {{c.gameTypes?.join(', ')||'Moki Mayhem'}}</div></div></div></div></div>
+
+<!-- GAME GUIDE (WINNING CONDITIONS) -->
+<div v-if="page==='guide'">
+  <div class="guide-section">
+    <h3>🏆 How Scoring Works (Winning Conditions)</h3>
+    <p><span class="highlight">DEPOSITS</span> are the #1 scoring action. Carry Warts to the deposit zone. Each deposit = major points.</p>
+    <p><span class="highlight">ELIMINATIONS</span> knock out opponents. Worth less than deposits but control the map.</p>
+    <p><span class="highlight">WART DISTANCE</span> = total distance carried with Warts. Bonus points on top.</p>
+    <p><span class="highlight">WINS</span> give team bonus but losing team still scores individually.</p>
+    <p style="margin-top:8px;color:var(--gold);font-weight:700">⚡ KEY INSIGHT: 1 deposit ≈ 3-4 eliminations in score value. This is why Strikers dominate despite lower win rates — they rush deposits while Bruisers fight.</p>
+  </div>
+  <div class="guide-section">
+    <h3>⚔️ Class Meta Analysis (Top 100 Regulars)</h3>
+    <div v-for="(c,name) in classMeta" :key="name" class="class-row">
+      <span class="b2" :class="classBadge(name)" style="width:70px;text-align:center">{{name}}</span>
+      <span class="stat">{{c.count}}/100</span>
+      <span style="font-size:10px;color:var(--td)">WR: <span :style="{color:c.avgWinPct>55?'var(--gn)':c.avgWinPct>50?'var(--gold)':'var(--red)'}">{{c.avgWinPct}}%</span></span>
+      <span style="font-size:10px;color:var(--td)">Dep: <span style="color:var(--cyan)">{{c.avgDeposits}}</span></span>
+      <span style="font-size:10px;color:var(--td)">Elim: <span style="color:var(--fire)">{{c.avgElims}}</span></span>
+      <span style="font-size:10px;color:var(--td)">Best: <span style="color:var(--tw)">{{c.best}}</span></span>
+    </div>
+  </div>
+  <div class="guide-section">
+    <h3>💡 Optimal Training Strategy</h3>
+    <p><span class="highlight">For Strikers/Sprinters:</span> Train <span class="stat">SPEED</span> (faster deposit runs) → <span class="stat">FORTITUDE</span> (survive while carrying) → skip STR/DEF.</p>
+    <p><span class="highlight">For Bruisers:</span> Train <span class="stat">STRENGTH</span> (hit harder) → <span class="stat">DEFENSE</span> (survive fights) → <span class="stat">SPEED</span> (chase).</p>
+    <p><span class="highlight">For Forwards/Grinders:</span> Balanced approach. Speed + Fortitude primarily, some Strength.</p>
+    <p style="margin-top:8px;color:var(--gold)">💎 PRO TIP: Check your class bonus (+225). Train the stat WITHOUT a class bonus to balance your Moki.</p>
+  </div>
+  <div class="guide-section">
+    <h3>🎯 Contest Strategy</h3>
+    <p>Each contest requires <span class="stat">4 Champion cards + 1 Scheme card</span>.</p>
+    <p>Pick Mokis with <span class="highlight">avgScore > 400</span> (elite tier).</p>
+    <p><span class="highlight">50/50 contests:</span> Top half wins. Safer bet for beginners.</p>
+    <p><span class="highlight">Top 5 Contest Picks:</span> Moki #343 (419 avg), Moki #1361 (417), Aura (416), Moki #672 (410), Moki #2420 (411).</p>
+  </div>
+</div>
+
+<!-- WALLET -->
+<div v-if="page==='wallet'">
+  <div v-if="!walletAddr" style="text-align:center;padding:40px"><div style="font-size:36px;margin-bottom:12px;opacity:.3">⚡</div><div style="font-family:'Orbitron',sans-serif;font-size:14px;color:var(--red);margin-bottom:8px">Connect Your Wallet</div><p style="font-size:11px;color:var(--td);margin-bottom:16px">Scan your Ronin wallet. View all Mokis with 5-stat grid: STR / SPD / DEF / DEX / FRT with base, training, and class breakdowns.</p><button class="btn btn-s" @click="showW=true">⚡ Connect Wallet</button></div>
+  <div v-else><div style="font-size:10px;color:var(--td);margin-bottom:12px;font-family:'JetBrains Mono',monospace">{{walletAddr.slice(0,8)}}...{{walletAddr.slice(-6)}} · {{roster.length}} Mokis</div>
+    <div v-if="loadingR" style="text-align:center;padding:30px;color:var(--td)">⏳ Scanning...</div>
+    <div v-for="m in roster" :key="m.id" class="card"><div class="chd"><span class="ct">{{m.name}} · {{m.cls}}</span><span class="b2" :class="m.isChampion?'bg':'bl'">{{m.isChampion?'CHAMPION':'REGULAR'}}</span></div><div class="cbd"><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px"><div v-for="(stat,key) in m.stats" :key="key" style="background:var(--bg3);border:1px solid var(--b);border-radius:6px;padding:8px;text-align:center"><div style="font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;color:var(--tw)">{{typeof stat.total==='number'?stat.total.toFixed(0):'—'}}</div><div style="font-size:7px;color:var(--td);letter-spacing:1px;text-transform:uppercase;margin-top:2px">{{key}}</div><div style="margin-top:4px;font-size:7px;color:var(--td)">B:{{stat.base}} <span style="color:var(--gn)">T:{{typeof stat.training==='number'?stat.training.toFixed(1):'?'}}</span> <span style="color:var(--cyan)">C:{{stat.class}}</span></div></div></div></div></div>
+    <div v-if="!roster.length&&!loadingR" style="text-align:center;padding:30px;color:var(--td)">No Mokis found</div>
+  </div>
+</div>
+
+<!-- AI OPTIMIZER -->
+<div v-if="page==='ai'">
+  <div class="aip">
+    <div style="font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--pu);margin-bottom:8px">🤖 AI Strategy Optimizer</div>
+    <p style="font-size:11px;color:var(--t);margin-bottom:12px;line-height:1.6">Built-in game intelligence with real Season 1 data. Ask about winning conditions, lineup picks, training, meta analysis, or any Grand Arena question.</p>
+    <textarea class="inp" v-model="aiPrompt" style="width:100%;height:80px;resize:vertical" placeholder="e.g. What class should I pick? How do winning conditions work? Best lineup for contests?"></textarea>
+    <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+      <button class="btn btn-s" @click="runAI" :disabled="aiLoading">{{aiLoading?'⏳ Thinking...':'🤖 Ask AI'}}</button>
+      <button class="btn btn-o" @click="quickAI('meta')">📊 Meta Analysis</button>
+      <button class="btn btn-o" @click="quickAI('winning')">🏆 Winning Conditions</button>
+      <button class="btn btn-o" @click="quickAI('training')">🏋️ Training Guide</button>
+      <button class="btn btn-o" @click="quickAI('contest')">🎯 Contest Strategy</button>
+      <button class="btn btn-o" @click="quickAI('lineup')">🃏 Best Lineup</button>
+    </div>
+    <div v-if="aiResult" class="aip-out">{{aiResult}}</div>
+  </div>
+</div>
+
+  </div></div></div>
+
+<script>
+const{createApp,ref,computed}=Vue;
+createApp({setup(){
+// ═══ ALL SCRAPED DATA ═══
+const RAW_REG=[["Moki #343",100925,"Striker",343,241,137,56.9,419,1133,38],["Aura",100770,"Striker",7324,242,125,51.6,416,1150,71],["Moki #1361",100440,"Striker",1361,241,136,56.4,417,1108,53],["Moki #672",99325,"Striker",672,242,131,54.1,410,1118,51],["Moki #2420",98970,"Striker",2420,241,129,53.5,411,1104,60],["Moki #8521",98765,"Striker",8521,242,135,55.8,408,840,178],["Moki #7136",98125,"Striker",7136,242,133,55,405,1073,51],["Moki #3607",97950,"Striker",3607,242,120,49.6,405,1159,50],["Moki #3091",97820,"Striker",3091,242,127,52.5,404,1095,61],["Moki #2179",97795,"Bruiser",2179,241,164,68,406,33,557],["Moki #7662",97785,"Striker",7662,242,119,49.2,404,1180,38],["Pizza Ninja",97620,"Striker",6870,241,137,56.9,405,1023,57],["Moki #1300",97450,"Striker",1300,241,129,53.5,404,1095,41],["Moki #3532",97405,"Striker",3532,242,124,51.2,403,1140,35],["Moki #2587",97255,"Striker",2587,241,123,51,404,1129,46],["Moki #540",97235,"Striker",540,242,126,52.1,402,1135,33],["Moki #8815",97190,"Striker",8815,242,131,54.1,402,1007,65],["Moki #6697",96900,"Sprinter",6697,241,127,52.7,402,1134,24],["Moki #7988",96770,"Sprinter",7988,241,119,49.4,402,1120,41],["Sensei Ketsu",96685,"Striker",8330,241,129,53.5,401,1057,48],["Moki #8301",96580,"Grinder",8301,241,124,51.5,401,1094,53],["Moki #1329",96560,"Bruiser",1329,241,146,60.6,401,100,463],["Moki #548",96545,"Striker",548,241,128,53.1,401,1065,39],["Moki #3375",97005,"Forward",3375,241,148,61.4,403,446,340],["Moki #4120",96130,"Striker",4120,241,119,49.4,399,1130,35]];
+const RAW_CHAMP=[["PNLS",334935,"Defender",1418,890,544,61.1,376,75,810],["Two",331610,"Defender",2,890,532,59.8,373,90,844],["Migatte Seishin",331420,"Defender",8575,890,522,58.6,372,118,712],["MK Ultra 8888",330100,"Defender",7302,890,527,59.2,371,96,749],["Mononoku",329475,"Defender",6820,890,437,49.1,370,2559,297],["Mr Carrot",329210,"Defender",984,890,525,59,370,105,724],["Palmer",329180,"Defender",8277,890,519,58.3,370,102,793],["Bloodmoon",329125,"Defender",539,890,455,51.1,370,2251,403],["Chef Maki",328430,"Defender",7008,890,506,56.9,369,110,761],["Peeltergeist",327865,"Defender",2575,890,513,57.6,368,122,642]];
+const RAW_MATCHES=[{i:'69b3931dc1941202de6407d1',r:['Moki #8451','Moki #494','Moki #2066'],b:['Moki #3477','Moki #6229','Moki #2139']},{i:'69b3931dc1941202de6407d0',r:['Moki #7369','Moki #5906','Moki #5127'],b:['Moki #6243','Moki #2310','Moki #2749']},{i:'69b3931dc1941202de6407cf',r:['Moki #8494','Moki #589','Moki #6668'],b:['Moki #2190','Moki #421','Moki #619']},{i:'69b3931dc1941202de6407ce',r:['Moki #2404','Moki #5956','Moki #4055'],b:['Moki #5072','Billy Bob','Moki #6194']},{i:'69b3931dc1941202de6407cd',r:['Moki #6694','Moki #7672','Moki #904'],b:['Moki #2988','Moki #1255','Moki #5801']},{i:'69b3931dc1941202de6407cc',r:['Zany','Moki #3205','Moki #1040'],b:['Moki #3870','Moki #458','Moki #7879']}];
+
+const parse=r=>r.map(p=>({name:p[0],score:p[1],cls:p[2],tokenId:p[3],matches:p[4],wins:p[5],winPct:p[6],avgScore:p[7],deposits:p[8],elims:p[9]}));
+const regulars=ref(parse(RAW_REG));
+const champions=ref(parse(RAW_CHAMP));
+const matches=ref(RAW_MATCHES.map(m=>({id:m.i,reds:m.r,blues:m.b})));
+const contests=ref([]);
+const roster=ref([]);const apiOk=ref(false);
+const page=ref('dashboard'),lbv=ref('reg'),lbs=ref(''),showW=ref(false),wInput=ref(''),walletAddr=ref(''),loadingR=ref(false),toasts=ref([]),aiPrompt=ref(''),aiResult=ref(''),aiLoading=ref(false);
+
+const navItems=[{id:'dashboard',icon:'🏠',label:'Dashboard'},{id:'leaderboard',icon:'🏆',label:'Leaderboard',live:true},{id:'matches',icon:'⚔️',label:'Matches',live:true},{id:'contests',icon:'🎯',label:'Contests',hot:true},{id:'guide',icon:'📖',label:'Game Guide',isnew:true},{id:'wallet',icon:'⚡',label:'Wallet & Stats'},{id:'ai',icon:'🤖',label:'AI Optimizer',isnew:true}];
+const ptitles={dashboard:'Dashboard',leaderboard:'Leaderboard',matches:'Matches',contests:'Contests',guide:'Game Guide & Winning Conditions',wallet:'Wallet & Moki Stats',ai:'AI Strategy Optimizer'};
+const prizeSlots=[{v:'60',l:'WEEKLY TOP 5',c:'var(--gold)'},{v:'33',l:'END-SEASON',c:'var(--fire)'},{v:'27',l:'1-OF-1',c:'var(--gn)'},{v:'40',l:'EVENTS',c:'var(--cyan)'}];
+const earnings=[{v:'$5,454',l:'EST. PER TOP 5',c:'var(--gold)'},{v:'$3,636',l:'EST. PER TOP 33',c:'var(--fire)'},{v:'$2,727',l:'PER 1-OF-1',c:'var(--gn)'},{v:'$1,500',l:'PER EVENT',c:'var(--cyan)'}];
+const classMeta={Striker:{count:67,avgWinPct:51.4,avgDeposits:1086,avgElims:54,best:'Moki #343'},Bruiser:{count:7,avgWinPct:65.6,avgDeposits:32,avgElims:562,best:'Moki #2179'},Forward:{count:8,avgWinPct:58.8,avgDeposits:441,avgElims:348,best:'Moki #3375'},Grinder:{count:9,avgWinPct:54.4,avgDeposits:954,avgElims:104,best:'Moki #8301'},Sprinter:{count:6,avgWinPct:51.4,avgDeposits:1094,avgElims:47,best:'Moki #6697'},Center:{count:2,avgWinPct:52,avgDeposits:800,avgElims:90,best:'Moki #7283'},Flanker:{count:1,avgWinPct:49,avgDeposits:600,avgElims:150,best:'Moki #5190'}};
+
+const activeLB=computed(()=>lbv.value==='reg'?regulars.value:champions.value);
+const filtLB=computed(()=>{let l=activeLB.value;if(lbs.value)l=l.filter(p=>p.name.toLowerCase().includes(lbs.value.toLowerCase()));return l;});
+function classBadge(c){return c==='Striker'?'bl':c==='Bruiser'?'bp':c==='Defender'?'bg':c==='Sprinter'?'bw':c==='Forward'?'bf':'bg';}
+function toast(msg,type='info'){const id=Date.now();toasts.value.push({id,msg,type});setTimeout(()=>toasts.value=toasts.value.filter(t=>t.id!==id),4000);}
+function openMatch(id){window.open('https://train.grandarena.gg/matches/'+id,'_blank');}
+
+async function tryGA(path){try{const r=await fetch('/api/ga?path='+encodeURIComponent(path),{signal:AbortSignal.timeout(8000)});if(r.ok){apiOk.value=true;return await r.json();}}catch{}return null;}
+
+async function loadLive(){
+  const lb=await tryGA('/api/v1/leaderboards/active');
+  if(lb?.data?.length){for(const l of lb.data){const sc=await tryGA('/api/v1/leaderboards/'+l.id+'/scores?limit=100');if(sc?.data?.length){const fresh=sc.data.map(p=>{const d=p.scoreDetail?.mokiMayhem||{};return{name:p.name||'Moki #'+p.mokiTokenId,score:p.score||0,cls:p.class||'',tokenId:p.mokiTokenId,matches:p.perfCount||0,wins:d.wins||0,winPct:+(d.winPct||0).toFixed(1),avgScore:+(d.avgScore||0).toFixed(0),deposits:d.totalDeposits||0,elims:d.totalEliminations||0};}).sort((a,b)=>b.score-a.score);if(l.name?.includes('Champion'))champions.value=fresh;else regulars.value=fresh;toast('✅ '+l.name+': '+fresh.length+' players','ok');}}}
+  const today=new Date().toISOString().split('T')[0];const mt=await tryGA('/api/v1/matches?matchDate='+today+'&limit=30');
+  if(mt?.data?.length){matches.value=mt.data.map(m=>{const pl=m.players||[];return{id:m.id,reds:pl.filter(p=>p.team==='red').map(p=>p.name),blues:pl.filter(p=>p.team==='blue').map(p=>p.name)};});toast('✅ '+matches.value.length+' matches','ok');}
+  const ct=await tryGA('/api/v1/contests/active');
+  if(ct?.data?.length){contests.value=ct.data.map(c=>({id:c.id,name:c.name||'Contest',entry:c.entryPrice?.amount||0,currency:c.entryPrice?.currency||'gems',entries:c.entries||0,maxEntries:c.maxEntries,gameTypes:c.gameTypes,featured:c.featured,prizeSplit:c.prizeSplitConfig?.defaultSplit||'',slots:c.lineupConfig?.slots?.length||0}));toast('✅ '+contests.value.length+' contests','ok');}
+}
+
+async function connectW(){if(!wInput.value.trim()){showW.value=false;return;}walletAddr.value=wInput.value.trim();showW.value=false;loadingR.value=true;page.value='wallet';toast('Scanning...','info');const d=await tryGA('/api/v1/users/'+walletAddr.value+'/mokis');if(d?.data?.length){roster.value=d.data.map(m=>({id:m.mokiTokenId,name:m.name||'Moki #'+m.mokiTokenId,cls:m.gameStats?.class||'',isChampion:m.isChampion||false,stats:m.gameStats?.stats||{}}));toast('✅ '+roster.value.length+' Mokis!','ok');}else{roster.value=[];toast('No Mokis found','err');}loadingR.value=false;}
+
+// ═══ AI - calls /api/ai edge function (has built-in intelligence) ═══
+async function runAI(){
+  if(!aiPrompt.value.trim())return;
+  aiLoading.value=true;aiResult.value='';
+  const ctx='Top Regulars: '+regulars.value.slice(0,5).map(p=>p.name+' ('+p.score+' mXP, '+p.cls+', '+p.winPct+'%WR, avg:'+p.avgScore+', dep:'+p.deposits+', elim:'+p.elims+')').join('; ')+'. Top Champions: '+champions.value.slice(0,3).map(p=>p.name+' ('+p.score+' mXP, '+p.cls+')').join('; ')+'. '+contests.value.length+' contests. '+matches.value.length+' matches today.';
+  try{
+    const r=await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:aiPrompt.value,context:ctx}),signal:AbortSignal.timeout(15000)});
+    if(r.ok){const d=await r.json();aiResult.value=d.response||d.error||'No response';toast('🤖 AI: '+(d.source==='claude-ai'?'Claude AI':'Built-in Intelligence'),'ok');}
+    else aiResult.value='Error '+r.status;
+  }catch(e){aiResult.value='Connection error: '+e.message+'\n\nTip: Make sure the site is deployed on Vercel (not localhost).';}
+  aiLoading.value=false;
+}
+function quickAI(type){
+  const prompts={meta:'Analyze the current meta and give me the best class strategy',winning:'How do winning conditions work in Moki Mayhem? What scores the most?',training:'What stats should I train for a new Moki? Priority order by class.',contest:'Which contests should I enter and what lineup should I pick?',lineup:'Give me the optimal 5-Moki lineup from the current top players for a contest'};
+  aiPrompt.value=prompts[type]||'';runAI();
+}
+function refreshAll(){loadLive();}
+loadLive();
+return{regulars,champions,matches,contests,roster,apiOk,page,lbv,lbs,showW,wInput,walletAddr,loadingR,toasts,aiPrompt,aiResult,aiLoading,navItems,ptitles,prizeSlots,earnings,classMeta,activeLB,filtLB,classBadge,toast,openMatch,connectW,runAI,quickAI,refreshAll};
+}}).mount('#app');
+</script>
+</body>
+</html>
